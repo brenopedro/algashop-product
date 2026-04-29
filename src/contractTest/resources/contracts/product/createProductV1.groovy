@@ -11,13 +11,34 @@ Contract.make {
         }
         urlPath("/api/v1/products")
         body([
-                name        : "Notebook X11",
-                brand       : "Deep Diver",
-                regularPrice: 1500.00,
-                salePrice   : 1000.00,
-                enabled     : true,
-                categoryId  : "fffee8b1-9c3a-4c5b-8f1e-2d9a7b6c8e9f",
-                description : "A gamer notebook"
+                name        : value(
+                        test("Notebook X11"),
+                        stub(nonBlank())
+                ),
+                brand       : value(
+                        test("Deep Diver"),
+                        stub(nonBlank())
+                ),
+                regularPrice: value(
+                        test(1500.00),
+                        stub(number())
+                ),
+                salePrice   : value(
+                        test(1000.00),
+                        stub(number())
+                ),
+                enabled     : value(
+                        test(true),
+                        stub(anyBoolean())
+                ),
+                categoryId  : value(
+                        test("fffee8b1-9c3a-4c5b-8f1e-2d9a7b6c8e9f"),
+                        stub(anyUuid())
+                ),
+                description : value(
+                        test("A gamer notebook"),
+                        stub(optional(nonBlank()))
+                ),
         ])
     }
     response {
@@ -28,17 +49,17 @@ Contract.make {
         body([
                 id          : anyUuid(),
                 addedAt     : anyIso8601WithOffset(),
-                name        : "Notebook X11",
-                brand       : "Deep Diver",
-                regularPrice: 1500.00,
-                salePrice   : 1000.00,
+                name        : fromRequest().body('$.name'),
+                brand       : fromRequest().body('$.brand'),
+                regularPrice: fromRequest().body('$.regularPrice'),
+                salePrice   : fromRequest().body('$.salePrice'),
                 inStock     : false,
-                enabled     : true,
+                enabled     : fromRequest().body('$.enabled'),
                 category    : [
                         id  : fromRequest().body('$.categoryId'),
                         name: "Notebook"
                 ],
-                description : "A gamer notebook"
+                description : fromRequest().body('$.description'),
         ])
     }
 }
