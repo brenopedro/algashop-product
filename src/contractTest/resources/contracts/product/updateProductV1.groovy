@@ -1,0 +1,65 @@
+package contracts.product
+
+import org.springframework.cloud.contract.spec.Contract
+
+Contract.make {
+    request {
+        method PUT()
+        headers {
+            contentType "application/json"
+            accept "application/json"
+        }
+        urlPath("/api/v1/products/fffee8b1-9c3a-4c5b-8f1e-2d9a7b6c8e9f")
+        body([
+                name        : value(
+                        test("Notebook X11"),
+                        stub(nonBlank())
+                ),
+                brand       : value(
+                        test("Deep Diver"),
+                        stub(nonBlank())
+                ),
+                regularPrice: value(
+                        test(1500.00),
+                        stub(number())
+                ),
+                salePrice   : value(
+                        test(1000.00),
+                        stub(number())
+                ),
+                enabled     : value(
+                        test(true),
+                        stub(anyBoolean())
+                ),
+                categoryId  : value(
+                        test("fffee8b1-9c3a-4c5b-8f1e-2d9a7b6c8e9f"),
+                        stub(anyUuid())
+                ),
+                description : value(
+                        test("A gamer notebook"),
+                        stub(optional(nonBlank()))
+                ),
+        ])
+    }
+
+    response {
+        status 200
+        headers {
+            contentType "application/json"
+        }
+        body([
+                id          : fromRequest().path(3),
+                addedAt     : anyIso8601WithOffset(),
+                name        : fromRequest().body('$.name'),
+                brand       : fromRequest().body('$.brand'),
+                regularPrice: fromRequest().body('$.regularPrice'),
+                salePrice   : fromRequest().body('$.salePrice'),
+                inStock     : anyBoolean(),
+                enabled     : fromRequest().body('$.enabled'),
+                category    : [
+                        id  : anyUuid(),
+                        name: "Notebook"
+                ]
+        ])
+    }
+}
