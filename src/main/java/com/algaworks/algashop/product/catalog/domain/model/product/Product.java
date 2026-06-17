@@ -1,6 +1,5 @@
 package com.algaworks.algashop.product.catalog.domain.model.product;
 
-
 import com.algaworks.algashop.product.catalog.domain.model.IdGenerator;
 import lombok.*;
 import org.springframework.data.annotation.*;
@@ -32,7 +31,7 @@ public class Product {
     private Long version;
 
     @CreatedDate
-    private OffsetDateTime createdAt;
+    private OffsetDateTime addedAt;
 
     @LastModifiedDate
     private OffsetDateTime updatedAt;
@@ -45,7 +44,7 @@ public class Product {
 
     @Builder
     public Product(String brand, String name, String description, BigDecimal regularPrice,
-                   BigDecimal salePrice, Boolean enabled) {
+            BigDecimal salePrice, Boolean enabled) {
         this.id = IdGenerator.generateTimeBasedUUID();
         this.brand = brand;
         this.name = name;
