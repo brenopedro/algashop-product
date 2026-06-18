@@ -31,6 +31,7 @@ public class ProductManagementApplicationService {
         Category category = findCategory(input.getCategoryId());
 
         updateProduct(product, input);
+        product.setCategory(category);
 
         productRepository.save(product);
     }

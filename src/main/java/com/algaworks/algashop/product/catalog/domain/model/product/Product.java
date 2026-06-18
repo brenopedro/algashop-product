@@ -13,9 +13,12 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.algaworks.algashop.product.catalog.domain.model.DomainException;
 import com.algaworks.algashop.product.catalog.domain.model.IdGenerator;
+import com.algaworks.algashop.product.catalog.domain.model.category.Category;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -41,6 +44,10 @@ public class Product {
     private Integer quantityInStock;
     private Boolean enabled;
 
+    @DocumentReference
+    @Field(name = "categoryId")
+    private Category category;
+
     @Version
     private Long version;
 
@@ -58,7 +65,7 @@ public class Product {
 
     @Builder
     public Product(String brand, String name, String description, BigDecimal regularPrice,
-            BigDecimal salePrice, Boolean enabled) {
+            BigDecimal salePrice, Boolean enabled, Category category) {
         this.setId(IdGenerator.generateTimeBasedUUID());
         this.setBrand(brand);
         this.setName(name);
@@ -66,6 +73,7 @@ public class Product {
         this.setRegularPrice(regularPrice);
         this.setSalePrice(salePrice);
         this.setEnabled(enabled);
+        this.setCategory(category);
     }
 
     public void setName(String name) {
@@ -113,6 +121,10 @@ public class Product {
     public void setEnabled(Boolean enabled) {
         Objects.requireNonNull(enabled);
         this.enabled = enabled;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     public void disable() {
