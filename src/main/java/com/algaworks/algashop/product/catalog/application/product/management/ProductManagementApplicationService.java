@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.algaworks.algashop.product.catalog.application.ResourceNotFoundException;
 import com.algaworks.algashop.product.catalog.domain.model.category.Category;
+import com.algaworks.algashop.product.catalog.domain.model.category.CategoryNotFoundException;
 import com.algaworks.algashop.product.catalog.domain.model.category.CategoryRepository;
 import com.algaworks.algashop.product.catalog.domain.model.product.Product;
 import com.algaworks.algashop.product.catalog.domain.model.product.ProductRepository;
@@ -46,6 +47,6 @@ public class ProductManagementApplicationService {
     }
 
     private Category findCategory(UUID categoryId) {
-        return categoryRepository.findById(categoryId).orElseThrow(ResourceNotFoundException::new);
+        return categoryRepository.findById(categoryId).orElseThrow(() -> new CategoryNotFoundException(categoryId));
     }
 }
