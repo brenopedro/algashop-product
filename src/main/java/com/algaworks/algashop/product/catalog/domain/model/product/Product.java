@@ -1,6 +1,7 @@
 package com.algaworks.algashop.product.catalog.domain.model.product;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.UUID;
@@ -41,12 +42,14 @@ public class Product {
     private String description;
     private BigDecimal regularPrice;
     private BigDecimal salePrice;
-    private Integer quantityInStock;
+    private Integer quantityInStock = 0;
     private Boolean enabled;
 
     @DocumentReference
     @Field(name = "categoryId")
     private Category category;
+
+    private Integer discountPercentageRounded;
 
     @Version
     private Long version;
@@ -103,6 +106,7 @@ public class Product {
             throw new DomainException("Sale price cannot be greater than regular price");
 
         this.regularPrice = regularPrice;
+        this.calculateDiscountPercentage();
     }
 
     public void setSalePrice(BigDecimal salePrice) {
@@ -116,6 +120,7 @@ public class Product {
             throw new DomainException("Sale price cannot be greater than regular price");
 
         this.salePrice = salePrice;
+        this.calculateDiscountPercentage();
     }
 
     public void setEnabled(Boolean enabled) {
@@ -139,6 +144,10 @@ public class Product {
         return this.getQuantityInStock() != null && this.getQuantityInStock() > 0;
     }
 
+    public boolean getHasDiscount() {
+        return getDiscountPercentageRounded() != null && this.getDiscountPercentageRounded() > 0;
+    }
+
     private void setId(UUID id) {
         Objects.requireNonNull(id);
         this.id = id;
@@ -150,5 +159,18 @@ public class Product {
             throw new IllegalArgumentException();
         this.quantityInStock = quantityInStock;
 
+    }
+
+    private void calculateDiscountPercentage() {
+        if (regularPrice == null || salePrice == null || regularPrice.signum() == 0) {
+            discountPercentageRounded = 0;
+            return;
+        }
+
+        discountPercentageRounded = BigDecimal.ONE
+                .subtract(salePrice.divide(regularPrice, 4, RoundingMode.HALF_UP))
+                .multiply(BigDecimal.valueOf(100))
+                .setScale(0, RoundingMode.HALF_UP)
+                .intValue();
     }
 }

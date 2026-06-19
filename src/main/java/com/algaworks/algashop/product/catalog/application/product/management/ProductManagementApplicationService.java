@@ -1,17 +1,15 @@
 package com.algaworks.algashop.product.catalog.application.product.management;
 
-import java.util.UUID;
-
-import org.springframework.stereotype.Service;
-
 import com.algaworks.algashop.product.catalog.domain.model.category.Category;
 import com.algaworks.algashop.product.catalog.domain.model.category.CategoryNotFoundException;
 import com.algaworks.algashop.product.catalog.domain.model.category.CategoryRepository;
 import com.algaworks.algashop.product.catalog.domain.model.product.Product;
 import com.algaworks.algashop.product.catalog.domain.model.product.ProductNotFoundException;
 import com.algaworks.algashop.product.catalog.domain.model.product.ProductRepository;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -57,6 +55,7 @@ public class ProductManagementApplicationService {
                 .regularPrice(input.getRegularPrice())
                 .salePrice(input.getSalePrice())
                 .enabled(input.getEnabled())
+                .category(category)
                 .build();
     }
 
