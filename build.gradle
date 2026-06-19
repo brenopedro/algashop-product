@@ -39,6 +39,7 @@ configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
+	mockitoAgent {transitive = false}
 	asciidoctorExt
 }
 
@@ -57,6 +58,9 @@ dependencies {
 	testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-verifier'
 	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
+	mockitoAgent 'org.mockito:mockito-core'
 }
 
 dependencyManagement {
@@ -78,6 +82,10 @@ tasks.named('contractTest') {
 	useJUnitPlatform()
 }
 
+tasks.withType(JavaCompile).configureEach {
+	options.compilerArgs << '-parameters'
+}
+
 asciidoctor {
 	dependsOn contractTest
 	inputs.dir snippetsDir
@@ -86,5 +94,38 @@ asciidoctor {
 		include 'index.adoc'
 		baseDirFollowsSourceFile()
 		outputDir = file("build/docs/asciidoc")
+	}
+}
+
+tasks.named('check') {
+	dependsOn(test, contractTest, integrationTest)
+}
+
+test {
+	filter {
+		excludeTestsMatching("*IT")
+	}
+	jvmArgs += "-javaagent:${configurations.mockitoAgent.asPath}"
+}
+
+tasks.register('integrationTest', Test) {
+	description = 'Run integration tests.'
+	group = 'verification'
+	jvmArgs += "-javaagent:${configurations.mockitoAgent.asPath}"
+
+	testClassesDirs = sourceSets.test.output.classesDirs
+	classpath = sourceSets.test.runtimeClasspath
+
+	shouldRunAfter test
+
+	useJUnitPlatform()
+
+	testLogging {
+		events "passed"
+	}
+
+	filter {
+		includeTestsMatching "*IT"
+		excludeTestsMatching "*Test"
 	}
 }

@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 
@@ -76,7 +75,7 @@ class ProductBase {
     }
 
     private void mockFilterProducts() {
-        when(productQueryService.filter(anyInt(), anyInt()))
+        when(productQueryService.filter(any()))
                 .then(answer -> {
                     Integer size = answer.getArgument(0);
                     return PageModel.<ProductDetailOutput>builder()
