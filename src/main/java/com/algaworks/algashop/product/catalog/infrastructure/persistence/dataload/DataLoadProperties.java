@@ -21,7 +21,7 @@ public class DataLoadProperties {
   private Boolean enabled;
 
   @NotNull
-  private Boolean autoDrop;
+  private Boolean autoDelete;
 
   @Valid
   private List<DataLoadSource> sources;

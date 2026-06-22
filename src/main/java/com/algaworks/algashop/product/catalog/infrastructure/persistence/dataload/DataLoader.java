@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bson.BsonArray;
+import org.bson.BsonDocument;
 import org.bson.Document;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -66,8 +67,8 @@ public class DataLoader implements ApplicationRunner {
       return 0;
 
     try {
-      if (Boolean.TRUE.equals(dataLoadProperties.getAutoDrop()))
-        mongoOperations.getCollection(collectionName).drop();
+      if (Boolean.TRUE.equals(dataLoadProperties.getAutoDelete()))
+        mongoOperations.getCollection(collectionName).deleteMany(new BsonDocument());
 
       return mongoOperations.insert(mongoDocs, collectionName).size();
     } catch (Exception e) {

@@ -13,9 +13,13 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Version;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.index.TextIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.TextScore;
 
 import com.algaworks.algashop.product.catalog.domain.model.DomainException;
 import com.algaworks.algashop.product.catalog.domain.model.IdGenerator;
@@ -29,6 +33,8 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Document(collection = "products")
+@CompoundIndex(name = "idx_product_by_category_enabledTrue_salePrice", def = "{'categoryId': 1, 'salePrice': 1}", partialFilter = "{'enabled': true}")
+@CompoundIndex(name = "idx_product_by_category_enabledTrue_addedAt", def = "{'categoryId': 1, 'addedAt': -1}", partialFilter = "{'enabled': true}")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product {
@@ -37,8 +43,13 @@ public class Product {
     @EqualsAndHashCode.Include
     private UUID id;
 
+    @Indexed(name = "idx_product_by_brand")
     private String brand;
+
+    @TextIndexed(weight = 1)
     private String name;
+
+    @TextIndexed(weight = 5)
     private String description;
     private BigDecimal regularPrice;
     private BigDecimal salePrice;
@@ -50,6 +61,9 @@ public class Product {
     private Category category;
 
     private Integer discountPercentageRounded;
+
+    @TextScore
+    private Float score;
 
     @Version
     private Long version;
