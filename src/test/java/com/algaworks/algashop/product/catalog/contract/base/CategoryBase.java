@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 @WebMvcTest(controllers = CategoryController.class)
@@ -70,7 +69,7 @@ public class CategoryBase {
     }
 
     private void mockFilterCategories() {
-        when(categoryQueryService.filter(anyInt(), anyInt()))
+        when(categoryQueryService.filter(any()))
                 .then(answer -> {
                     Integer size = answer.getArgument(0);
                     return PageModel.<CategoryDetailOutput>builder()

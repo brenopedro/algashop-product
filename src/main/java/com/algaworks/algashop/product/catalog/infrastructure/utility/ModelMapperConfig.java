@@ -1,7 +1,6 @@
 package com.algaworks.algashop.product.catalog.infrastructure.utility;
 
 import com.algaworks.algashop.product.catalog.application.product.query.ProductDetailOutput;
-import com.algaworks.algashop.product.catalog.application.product.query.ProductSummaryOutput;
 import com.algaworks.algashop.product.catalog.application.utility.Mapper;
 import com.algaworks.algashop.product.catalog.domain.model.product.Product;
 import org.apache.commons.lang3.StringUtils;
@@ -37,12 +36,6 @@ public class ModelMapperConfig {
                     .addMappings(mapping -> {
                          mapping.using(fromStringToSlugConverter)
                                    .map(Product::getName, ProductDetailOutput::setSlug);
-                    });
-
-          modelMapper.createTypeMap(Product.class, ProductSummaryOutput.class)
-                    .addMappings(mapping -> {
-                         mapping.using(fromStringToShortStringConverter)
-                                   .map(Product::getDescription, ProductSummaryOutput::setShortDescription);
                     });
      }
 
