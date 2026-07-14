@@ -2,6 +2,8 @@ package com.algaworks.algashop.product.catalog.application.category.management;
 
 import java.util.UUID;
 
+import com.algaworks.algashop.product.catalog.application.ApplicationMessagePublisher;
+import com.algaworks.algashop.product.catalog.application.category.event.CategoryUpdatedEvent;
 import org.springframework.stereotype.Service;
 
 import com.algaworks.algashop.product.catalog.domain.model.category.Category;
@@ -15,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 public class CategoryManagementApplicationService {
 
     private final CategoryRepository categoryRepository;
+    private final ApplicationMessagePublisher applicationMessagePublisher;
 
     public UUID create(CategoryInput input) {
         Category category = new Category(input.getName(), input.getEnabled());
@@ -28,6 +31,12 @@ public class CategoryManagementApplicationService {
         category.setName(input.getName());
         category.setEnabled(input.getEnabled());
         categoryRepository.save(category);
+
+        applicationMessagePublisher.send(new CategoryUpdatedEvent(
+                category.getId(),
+                category.getName(),
+                category.getEnabled()
+        ));
     }
 
     public void delete(UUID categoryId) {
@@ -35,5 +44,11 @@ public class CategoryManagementApplicationService {
                 .orElseThrow(() -> new CategoryNotFoundException(categoryId));
         category.setEnabled(false);
         categoryRepository.save(category);
+
+        applicationMessagePublisher.send(new CategoryUpdatedEvent(
+                category.getId(),
+                category.getName(),
+                category.getEnabled()
+        ));
     }
 }

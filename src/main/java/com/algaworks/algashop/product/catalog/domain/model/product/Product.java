@@ -1,40 +1,27 @@
 package com.algaworks.algashop.product.catalog.domain.model.product;
 
+import com.algaworks.algashop.product.catalog.domain.model.DomainException;
+import com.algaworks.algashop.product.catalog.domain.model.IdGenerator;
+import com.algaworks.algashop.product.catalog.domain.model.category.Category;
+import lombok.*;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.annotation.*;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.index.TextIndexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.TextScore;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.annotation.Version;
-import org.springframework.data.mongodb.core.index.CompoundIndex;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.index.TextIndexed;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.DocumentReference;
-import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.data.mongodb.core.mapping.TextScore;
-
-import com.algaworks.algashop.product.catalog.domain.model.DomainException;
-import com.algaworks.algashop.product.catalog.domain.model.IdGenerator;
-import com.algaworks.algashop.product.catalog.domain.model.category.Category;
-
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 @Getter
 @Document(collection = "products")
-@CompoundIndex(name = "idx_product_by_category_enabledTrue_salePrice", def = "{'categoryId': 1, 'salePrice': 1}", partialFilter = "{'enabled': true}")
-@CompoundIndex(name = "idx_product_by_category_enabledTrue_addedAt", def = "{'categoryId': 1, 'addedAt': -1}", partialFilter = "{'enabled': true}")
+@CompoundIndex(name = "idx_product_by_category_enabledTrue_salePrice", def = "{'category.id': 1, 'salePrice': 1}", partialFilter = "{'enabled': true}")
+@CompoundIndex(name = "idx_product_by_category_enabledTrue_addedAt", def = "{'category.id': 1, 'addedAt': -1}", partialFilter = "{'enabled': true}")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product {
@@ -56,9 +43,7 @@ public class Product {
     private Integer quantityInStock = 0;
     private Boolean enabled;
 
-    @DocumentReference
-    @Field(name = "categoryId")
-    private Category category;
+    private ProductCategory category;
 
     private Integer discountPercentageRounded;
 
@@ -143,7 +128,8 @@ public class Product {
     }
 
     public void setCategory(Category category) {
-        this.category = category;
+        Objects.requireNonNull(category);
+        this.category = ProductCategory.of(category);
     }
 
     public void disable() {
