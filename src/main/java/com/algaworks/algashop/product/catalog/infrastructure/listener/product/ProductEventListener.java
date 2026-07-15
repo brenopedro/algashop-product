@@ -1,0 +1,37 @@
+package com.algaworks.algashop.product.catalog.infrastructure.listener.product;
+
+import com.algaworks.algashop.product.catalog.domain.model.product.*;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
+
+@Slf4j
+@Component
+public class ProductEventListener {
+
+    @EventListener(ProductPriceChangedEvent.class)
+    public void handle(ProductPriceChangedEvent event) {
+        log.info("Product price change event received" + event);
+    }
+
+    @EventListener(ProductPlacedOnSaleEvent.class)
+    public void handle(ProductPlacedOnSaleEvent event) {
+        log.info("Product placed on Sale event received " + event);
+    }
+
+    @EventListener(ProductAddedEvent.class)
+    public void handle(ProductAddedEvent event) {
+        log.info("Product added event received " + event);
+    }
+
+    @EventListener(ProductListedEvent.class)
+    public void handle(ProductListedEvent event) {
+        log.info("Product listed event received " + event);
+    }
+
+    @EventListener(ProductDelistedEvent.class)
+    public void handle(ProductDelistedEvent event) {
+        log.info("Product delisted event received " + event);
+    }
+
+}
