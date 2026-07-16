@@ -4,6 +4,7 @@ import com.algaworks.algashop.product.catalog.application.ResourceNotFoundExcept
 import com.algaworks.algashop.product.catalog.application.category.management.CategoryInput;
 import com.algaworks.algashop.product.catalog.application.category.management.CategoryManagementApplicationService;
 import com.algaworks.algashop.product.catalog.application.category.query.CategoryDetailOutput;
+import com.algaworks.algashop.product.catalog.application.category.query.CategoryFilter;
 import com.algaworks.algashop.product.catalog.application.category.query.CategoryOutputTestDataBuilder;
 import com.algaworks.algashop.product.catalog.application.category.query.CategoryQueryService;
 import com.algaworks.algashop.product.catalog.application.product.query.PageModel;
@@ -71,10 +72,10 @@ public class CategoryBase {
     private void mockFilterCategories() {
         when(categoryQueryService.filter(any()))
                 .then(answer -> {
-                    Integer size = answer.getArgument(0);
+                    CategoryFilter filter = answer.getArgument(0);
                     return PageModel.<CategoryDetailOutput>builder()
                             .number(0)
-                            .size(size)
+                            .size(filter.getSize())
                             .totalPages(1)
                             .totalElements(2)
                             .content(List.of(
