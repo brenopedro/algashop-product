@@ -92,22 +92,15 @@ public class ProductQueryServiceImpl implements ProductQueryService {
                 .build();
     }
 
-    private ProjectionOperation projectionForSummary() {
-        return project()
-                .and("_id").as("_id")
-                .and("addedAt").as("addedAt")
-                .and("name").as("name")
-                .and("brand").as("brand")
-                .and("regularPrice").as("regularPrice")
-                .and("salePrice").as("salePrice")
-                .and("enabled").as("enabled")
-                .and("quantityInStock").as("quantityInStock")
-                .and("discountPercentageRounded").as("discountPercentageRounded")
-                .and("score").as("score")
-                .and("category._id").as("category._id")
-                .and("category.name").as("category.name")
-                .and("category.enabled").as("category.enabled")
+    public Optional<TextCriteria> buildTextCriteria(ProductFilter filter) {
+        if (StringUtils.isNotBlank(filter.getTerm())) {
+            return Optional.of(TextCriteria.forDefaultLanguage().matching(filter.getTerm()));
+        }
+        return Optional.empty();
+    }
 
+    private ProjectionOperation projectionForSummary() {
+        return project(ProductDetailOutput.class)
                 .andExpression("salePrice < regularPrice").as("hasDiscount")
                 .andExpression("quantityInStock > 0").as("inStock")
                 .and(StringOperators.Substr.valueOf("description")
@@ -185,12 +178,6 @@ public class ProductQueryServiceImpl implements ProductQueryService {
         );
     }
 
-    public Optional<TextCriteria> buildTextCriteria(ProductFilter filter) {
-        if (StringUtils.isNotBlank(filter.getTerm())) {
-            return Optional.of(TextCriteria.forDefaultLanguage().matching(filter.getTerm()));
-        }
-        return Optional.empty();
-    }
 
     private Sort sortWith(ProductFilter filter) {
         if (StringUtils.isNotBlank(filter.getTerm())) {
