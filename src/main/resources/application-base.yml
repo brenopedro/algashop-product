@@ -3,7 +3,6 @@ server.port: 8083
 spring:
   application:
     name: product-catalog
-  mongodb:
   data:
     mongodb:
       auto-index-creation: true
