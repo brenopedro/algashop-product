@@ -1,10 +1,14 @@
 package com.algaworks.algashop.product.catalog.application.product.management;
 
+import com.algaworks.algashop.product.catalog.application.product.query.ProductDetailOutput;
+import com.algaworks.algashop.product.catalog.application.utility.Mapper;
 import com.algaworks.algashop.product.catalog.domain.model.category.Category;
 import com.algaworks.algashop.product.catalog.domain.model.category.CategoryNotFoundException;
 import com.algaworks.algashop.product.catalog.domain.model.category.CategoryRepository;
 import com.algaworks.algashop.product.catalog.domain.model.product.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,14 +22,18 @@ public class ProductManagementApplicationService {
     private final CategoryRepository categoryRepository;
     private final StockMovementRepository stockMovementRepository;
     private final StockService stockService;
+    private final Mapper mapper;
 
-    public UUID create(ProductInput input) {
+    @CachePut(cacheNames = "algashop:products:v1", key = "#result.id", condition = "#input.enabled == true")
+    public ProductDetailOutput create(ProductInput input) {
         Product product = mapToProduct(input);
         productRepository.save(product);
-        return product.getId();
+        return mapper.convert(product, ProductDetailOutput.class);
     }
 
-    public void update(UUID productId, ProductInput input) {
+    @CachePut(cacheNames = "algashop:products:v1", key = "#productId", condition = "#input.enabled == true")
+    @CacheEvict(cacheNames = "algashop:products:v1", key = "#productId", condition = "#input.enabled == false")
+    public ProductDetailOutput update(UUID productId, ProductInput input) {
         Product product = findProduct(productId);
         Category category = findCategory(input.getCategoryId());
 
@@ -33,8 +41,10 @@ public class ProductManagementApplicationService {
         product.setCategory(category);
 
         productRepository.save(product);
+        return mapper.convert(product, ProductDetailOutput.class);
     }
 
+    @CacheEvict(cacheNames = "algashop:products:v1", key = "#productId")
     public void disable(UUID productId) {
         Product product = findProduct(productId);
         product.disable();
