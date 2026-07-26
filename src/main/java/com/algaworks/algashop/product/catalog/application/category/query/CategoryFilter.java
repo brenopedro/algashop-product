@@ -1,22 +1,19 @@
 package com.algaworks.algashop.product.catalog.application.category.query;
 
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
-
 import com.algaworks.algashop.product.catalog.application.utility.SortablePageFilter;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+import org.springframework.data.domain.Sort;
 
 @Data
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class CategoryFilter extends SortablePageFilter<CategoryFilter.SortType> {
+
+  private String name;
+  private Boolean enabled;
 
   @Override
   public SortType getSortByPropertyOrDefault() {
@@ -28,8 +25,24 @@ public class CategoryFilter extends SortablePageFilter<CategoryFilter.SortType> 
     return getSortDirection() == null ? Sort.Direction.ASC : getSortDirection();
   }
 
-  private String name;
-  private Boolean enabled;
+  public boolean isCacheable() {
+    return isDefaultFilter();
+  }
+
+  public static CategoryFilter defaultFilter() {
+    return CategoryFilter.builder()
+            .name(null)
+            .enabled(true)
+            .page(0)
+            .size(15)
+            .sortDirection(Sort.Direction.ASC)
+            .sortByProperty(SortType.NAME)
+            .build();
+  }
+
+  private boolean isDefaultFilter() {
+    return this.equals(defaultFilter());
+  }
 
   @Getter
   @RequiredArgsConstructor

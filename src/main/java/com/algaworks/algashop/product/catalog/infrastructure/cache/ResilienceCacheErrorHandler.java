@@ -1,6 +1,7 @@
 package com.algaworks.algashop.product.catalog.infrastructure.cache;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.SerializationException;
 import org.jspecify.annotations.Nullable;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.Cache;
@@ -21,7 +22,11 @@ public class ResilienceCacheErrorHandler implements CacheErrorHandler {
     @Override
     public void handleCachePutError(RuntimeException exception, Cache cache, Object key, @Nullable Object value) {
         String method = "PUT";
-        logWarn(exception, cache, key, method);
+        if (exception instanceof SerializationException) {
+            logError(exception, cache, key, method);
+        } else {
+            logWarn(exception, cache, key, method);
+        }
     }
 
     @Override
@@ -39,5 +44,10 @@ public class ResilienceCacheErrorHandler implements CacheErrorHandler {
     private static void logWarn(RuntimeException exception, Cache cache, Object key, String method) {
         log.warn("Cache {} error | cache='{}' | key={} | cause='{}'", method, cache.getName(),
                 key, exception.getClass().getSimpleName());
+    }
+
+    private static void logError(RuntimeException exception, Cache cache, Object key, String method) {
+        log.error("Cache {} error | cache='{}' | key={} | cause='{}'", method, cache.getName(),
+                key, exception.getClass().getSimpleName(), exception);
     }
 }
