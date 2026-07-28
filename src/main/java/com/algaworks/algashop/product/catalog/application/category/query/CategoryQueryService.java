@@ -3,6 +3,7 @@ package com.algaworks.algashop.product.catalog.application.category.query;
 import com.algaworks.algashop.product.catalog.application.product.query.PageModel;
 import org.springframework.cache.annotation.Cacheable;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 public interface CategoryQueryService {
@@ -14,4 +15,6 @@ public interface CategoryQueryService {
             key = "'default'",
             condition = "#filter.isCacheable()")
     PageModel<CategoryDetailOutput> filter(CategoryFilter filter);
+
+    OffsetDateTime lastModified();
 }
