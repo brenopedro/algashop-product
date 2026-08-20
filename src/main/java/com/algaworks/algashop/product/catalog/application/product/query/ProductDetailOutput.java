@@ -33,6 +33,8 @@ public class ProductDetailOutput implements Serializable {
     private Integer quantityInStock;
     private Integer discountPercentageRounded;
 
+    private ImageOutput mainImage;
+
     private Long version;
     private OffsetDateTime updatedAt;
 }

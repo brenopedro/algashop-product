@@ -34,6 +34,8 @@ public class ProductSummaryOutput {
     private Integer quantityInStock;
     private Integer discountPercentageRounded;
 
+    private ImageOutput mainImage;
+
     private Float score;
 
     public String getSlug() {
