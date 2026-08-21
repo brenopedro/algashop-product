@@ -22,7 +22,7 @@ public class StorageProviderAwsS3Impl implements StorageProvider {
     public boolean healthCheck() {
         try {
             return s3Template.bucketExists(properties.getBucketName());
-        } catch (Exception e) {
+        } catch (Exception _) {
             return false;
         }
     }
