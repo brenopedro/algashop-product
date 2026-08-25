@@ -57,11 +57,20 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler({ UnprocessableContentException.class, DomainException.class, StorageProviderException.class })
-    public ProblemDetail hanldeUnprocessableExcpetion(Exception ex) {
+    public ProblemDetail handleUnprocessableException(Exception ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.UNPROCESSABLE_CONTENT);
         problemDetail.setTitle("Unprocessable content");
         problemDetail.setDetail(ex.getMessage());
         problemDetail.setType(URI.create("/errors/unprocessable-content"));
+        return problemDetail;
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ProblemDetail handleException(Exception ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        problemDetail.setTitle("Internal Server Error");
+        problemDetail.setDetail(ex.getMessage());
+        problemDetail.setType(URI.create("/errors/internal-server-error"));
         return problemDetail;
     }
 }
